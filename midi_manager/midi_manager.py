@@ -423,8 +423,6 @@ class MidiWriter():
         MyMIDI.addTempo(track,time,120)
         time = 0
         for note in seqVector:
-            import pdb
-            pdb.set_trace()
             # MyMIDI.addNote(track,channel,pitch,time,duration,volume)
             MyMIDI.addNote(0,0,note,time,1,100)
             time = time + 1
@@ -469,9 +467,6 @@ class MidiWriter():
         track = midi.Track()
         # Append the track to the pattern
         pattern.append(track)
-
-        # import pdb
-        # pdb.set_trace()
 
         for note in seqVector:
             # Instantiate a MIDI note on event, append it to the track
