@@ -89,9 +89,10 @@ class MidiLoader():
 
         for track in pattern:
             for evt in track:
-                # the and evt.tick == 1 is specifically done for the midis form mono-MusicXML-dataset
-                # otherwise they duplicate the notes, but seems to have always a noteon event with
-                # tick 1
+                # the and evt.tick == 1 is to not duplicate the notes, basically every note has
+                # tick 1 with the specific velocity (dinamyc) and after the time passes,
+                # the same note with the apropiate tick and velocity 0, as I only take here
+                # the pitch I use any of them, but not both
                 if isinstance(evt, midi.NoteOnEvent) and evt.tick == 1:
                     sequence.append(evt.pitch)
 
