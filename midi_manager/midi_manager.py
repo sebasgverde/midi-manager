@@ -202,11 +202,13 @@ class MidiLoader():
     def sequence_melody_vector_2_DB12_melody_vector(self, note_sequence_vector):
         min_midi = 0
         max_midi = 127
+        up_transp = 0
+        down_transp = 0
 
         min_note = min(note_sequence_vector)
         max_note = max(note_sequence_vector)
 
-        middle_song_point = ((max_note - min_note)/2)+min_note
+        middle_song_point = int(math.floor((max_note - min_note)/2))+min_note
 
         # how far is the middle point form central C4?
         general_middle_gap = 60 - middle_song_point
@@ -214,14 +216,20 @@ class MidiLoader():
         # after reaching central C how many tranpositions remains?
         remaining_transp = 11 - abs(general_middle_gap)
 
-        # if is none, the extra for up
-        up_transp = int(math.ceil(remaining_transp/2))
-        down_transp = remaining_transp - up_transp
+        if remaining_transp >= 0:
+            # if is none, the extra for up
+            up_transp = int(math.ceil(remaining_transp/2))
+            down_transp = remaining_transp - up_transp
 
-        if general_middle_gap < 0:
-            down_transp += abs(general_middle_gap)
+            if general_middle_gap < 0:
+                down_transp += abs(general_middle_gap)
+            else:
+                up_transp += abs(general_middle_gap)
         else:
-            up_transp += abs(general_middle_gap)
+            if general_middle_gap <= 0:
+                down_transp = 11
+            else:
+                up_transp = 11
 
 
         tensors = [note_sequence_vector]
