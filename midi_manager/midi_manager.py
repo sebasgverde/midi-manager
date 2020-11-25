@@ -10,6 +10,92 @@ import cPickle
 import pickle
 import math
 
+#########################################################
+######## variations of methods with time support#########
+#########################################################
+
+standard_resoultion = 16
+def midi2sequenceVectorWithTimeTuple(midifile='test.mid'):
+    pattern = midi.read_midifile(midifile)
+    sequence = []
+    resolution_midi = pattern.resolution
+    resolution = resolution_midi * 4 / standard_resoultion
+    for track in pattern:
+        for evt in track:
+            # In this case I'm interested in time, therefore, need the note on
+            # event with the final tick
+            if isinstance(evt, midi.NoteOnEvent) and evt.tick > 1:
+                key_in_dict = int(round(evt.tick / float(resolution)))
+                sequence.append([evt.pitch,key_in_dict])
+
+    return sequence
+
+# tranform a list of notes [pitch, duration] in the interval changes
+# [interval, duration], it uses the duration of the first note of the interval
+def sequence_melody_vector_2_interval_melody_vector_with_time(note_sequence_vector):
+    tensor = []
+
+    for i in range(len(note_sequence_vector)-1):
+        interval = note_sequence_vector[i+1][0] - note_sequence_vector[i][0]
+        duration = note_sequence_vector[i][1]
+        tensor.append([interval, duration])
+
+    return tensor
+
+# transform a list of notes, in 12 vectors in every tonality taking into
+# account the min and max note in song, and spreding the notes optimal in the midi space
+
+def sequence_melody_vector_2_DB12_melody_vector_with_time(sequence_vector):
+    durations = [elem[1] for elem in sequence_vector]
+    note_sequence_vector = [elem[0] for elem in sequence_vector]
+
+    # min_midi = 0
+    # max_midi = 127
+    up_transp = 0
+    down_transp = 0
+
+    min_note = min(note_sequence_vector)
+    max_note = max(note_sequence_vector)
+
+    middle_song_point = int(math.floor((max_note - min_note)/2))+min_note
+
+    # how far is the middle point form central C4?
+    general_middle_gap = 60 - middle_song_point
+
+    # after reaching central C how many tranpositions remains?
+    remaining_transp = 11 - abs(general_middle_gap)
+
+    if remaining_transp >= 0:
+        # if is none, the extra for up
+        up_transp = int(math.ceil(remaining_transp/2))
+        down_transp = remaining_transp - up_transp
+
+        if general_middle_gap < 0:
+            down_transp += abs(general_middle_gap)
+        else:
+            up_transp += abs(general_middle_gap)
+    else:
+        if general_middle_gap <= 0:
+            down_transp = 11
+        else:
+            up_transp = 11
+
+
+    tensors = [note_sequence_vector]
+
+    for i in range(down_transp):
+        new_note_vector = [x-(i+1) for x in note_sequence_vector]
+        tensors.append(new_note_vector)
+    for i in range(up_transp):
+        new_note_vector = [x+(i+1) for x in note_sequence_vector]
+        tensors.append(new_note_vector)
+
+    db12_sequences = []
+    for seq in tensors:
+        db12_sequences.append([[pitch, duration] for pitch, duration in zip(seq, durations)])
+
+    return db12_sequences
+
 class MidiLoader():
     def __init__(self, data_dir):
         self.data_dir = data_dir
