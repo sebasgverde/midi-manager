@@ -1,6 +1,6 @@
 from setuptools import setup
 setup(name='midi_manager',
-      version='1.0',
+      version='2.0',
       description='A python library to clean, process and convert midi datasets in ready to use formats like python lists, dictionaries and pickles for machine learning models',
       url='https://github.com/sebasgverde/midi-manager',
       author='Sebastian Garcia Valencia',
