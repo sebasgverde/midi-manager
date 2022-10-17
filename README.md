@@ -1,6 +1,6 @@
 # midi-manager
 A python library to clean, process and convert midi datasets in ready to use formats like python lists, dictionaries and pickles for machine learning models.
-It also provides the methods to transform a midi dataset in interval and data augmented variations (see this paper: [not published yet]())
+It also provides the methods to transform a midi dataset in interval and data augmented variations (see this paper: [A framework to compare music generative models using automatic evaluation metrics extended to rhythm](https://sebasgverde.github.io/rnn-time-music-paper/))
 
 See the library in PyPI: [https://pypi.python.org/pypi/midi-manager](https://pypi.python.org/pypi/midi-manager)
 
